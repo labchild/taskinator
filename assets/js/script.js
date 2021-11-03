@@ -233,13 +233,68 @@ var taskStatusHandler = function (event) {
             tasks[i].status = statusValue;
         }
     }
+
+    saveTasks();
 }
 
-var saveTasks = function() {
+// save tasks array to local storage function
+var saveTasks = function () {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
+// retrieve tasks from storage and send to GUI
+var loadTasks = function () {
+    // get data from localStorage and set to tasks arr
+    tasks = localStorage.getItem("tasks");
+
+    // check if tasks array is empty
+    if (!tasks) {
+        // set tasks to empty array
+        tasks = [];
+    }
+
+    // change tasks back into object from string
+    tasks = JSON.parse(tasks);
+
+    for (var i = 0; i < tasks.length; i++) {
+        // set id to tasks
+        var taskSelected = tasks[i];
+        taskSelected.id = taskIdCounter;
+        
+        // create li element for task
+        var listItemEl = document.createElement("li");
+        listItemEl.className = "task-item";
+        listItemEl.setAttribute("data-task-id", taskSelected.id);
+
+        // create div el to hold task info inside li el & append to li el
+        var taskInfoEl = document.createElement("div");
+        taskInfoEl.className = "task-info";
+        taskInfoEl.innerHTML = "<h3 class='task-name'>" + tasks[i].name + "</h3><span class='task-type'>" + tasks[i].type + "</span>";
+        listItemEl.appendChild(taskInfoEl);
+
+        //create task actions and append to li el
+        var taskActionsEl = createTaskActions(tasks[i].id);
+        listItemEl.appendChild(taskActionsEl);
+
+        if (tasks[i].status === "to do") {
+            listItemEl.querySelector("select[name='status-change']").selectedIndex = 0;
+            tasksToDoEl.appendChild(listItemEl);
+        } else if (tasks[i].status === "in progress") {
+            listItemEl.querySelector("select[name='in-progress']").selectedIndex = 1;
+            tasksInProgressEl.appendChild(listItemEl);
+        } else if (tasks[i].status === "completed") {
+            listItemEl.querySelector("select[name='completed']");
+            tasksCompletedEl.appendChild(listItemEl);
+        }
+
+        taskIdCounter++;
+        console.log(listItemEl);
+    }
+    saveTasks();
+}
+
 // listeners and function calls
+loadTasks();
 formEl.addEventListener("submit", taskFormHandler);
 pageContentEl.addEventListener("click", taskButtonHandler);
 pageContentEl.addEventListener("change", taskStatusHandler);
