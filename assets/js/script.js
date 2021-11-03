@@ -1,3 +1,4 @@
+// assignment code
 var taskIdCounter = 0;
 var formEl = document.querySelector("#task-form");
 var tasksToDoEl = document.querySelector("#tasks-to-do");
@@ -6,7 +7,7 @@ var tasksCompletedEl = document.querySelector("#tasks-completed");
 var pageContentEl = document.querySelector("#page-content");
 var tasks = [];
 
-
+// function assignments
 // get user info form function
 var taskFormHandler = function (event) {
     event.preventDefault();
@@ -63,6 +64,8 @@ var createTaskEl = function (taskDataObj) {
     // add task id to task object data and add to tasks array for storage
     taskDataObj.id = taskIdCounter;
     tasks.push(taskDataObj);
+    // save tasks arr to local storage
+    saveTasks();
 
     // add task actions to list items
     var taskActionsEl = createTaskActions(taskIdCounter);
@@ -73,9 +76,6 @@ var createTaskEl = function (taskDataObj) {
 
     // increase task counter for next unique id
     taskIdCounter++;
-
-    console.log(taskDataObj);
-    console.log(taskDataObj.status);
 };
 
 // add task option buttons to task elements function
@@ -140,8 +140,6 @@ var taskButtonHandler = function (event) {
 
 // edit task function
 var editTask = function (taskId) {
-    console.log("editing task #" + taskId);
-
     // get task list item element
     var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
 
@@ -177,6 +175,9 @@ var completeEditTask = function (taskName, taskType, taskId) {
 
     alert("Task Updated!");
 
+    // save tasks arr to storage
+    saveTasks();
+
     // reset form and button
     formEl.removeAttribute("data-task-id");
     document.querySelector("#save-task").textContent = "Add Task";
@@ -201,6 +202,9 @@ var deleteTask = function (taskId) {
 
     // reassign to updated task arr to tasks arr
     tasks = updatedTaskArr;
+
+    // save tasks arr to storage
+    saveTasks();
 }
 
 // handle select option change function
@@ -231,6 +235,11 @@ var taskStatusHandler = function (event) {
     }
 }
 
+var saveTasks = function() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+// listeners and function calls
 formEl.addEventListener("submit", taskFormHandler);
 pageContentEl.addEventListener("click", taskButtonHandler);
 pageContentEl.addEventListener("change", taskStatusHandler);
